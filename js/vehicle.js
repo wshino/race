@@ -45,9 +45,17 @@ class Vehicle {
         cabin.position.set(-0.2, 1.35, 0);
         this.vehicleGroup.add(cabin);
 
-        // Windshield slope (gives aerodynamic look)
+        // Windshield slope (gives aerodynamic look) - using transparent material
+        const windshieldGlassMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x88ccff,
+            transparent: true,
+            opacity: 0.15,
+            metalness: 0.1,
+            roughness: 0.05,
+            transmission: 0.95,
+        });
         const windshieldGeometry = new THREE.BoxGeometry(0.8, 0.7, 1.85);
-        const windshield = new THREE.Mesh(windshieldGeometry, bodyMaterial);
+        const windshield = new THREE.Mesh(windshieldGeometry, windshieldGlassMaterial);
         windshield.position.set(1.1, 1.5, 0);
         windshield.rotation.z = 0.35; // Sloped windshield
         this.vehicleGroup.add(windshield);
