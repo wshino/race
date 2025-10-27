@@ -24,36 +24,56 @@ class Vehicle {
 
     /**
      * Create the exterior body of Tesla Model S
+     * Proportions based on actual Tesla Model S: ~5m long, 2m wide, 1.4m high
      */
     createExterior() {
-        // Main body
-        const bodyGeometry = new THREE.BoxGeometry(4.5, 1.5, 2);
         const bodyMaterial = new THREE.MeshStandardMaterial({
-            color: 0x1a1a1a,
+            color: 0x1a1a1a, // Deep black
             metalness: 0.9,
             roughness: 0.1,
         });
-        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-        body.position.y = 0.75;
-        this.vehicleGroup.add(body);
 
-        // Roof/Cabin
-        const roofGeometry = new THREE.BoxGeometry(3, 1.2, 1.8);
-        const roof = new THREE.Mesh(roofGeometry, bodyMaterial);
-        roof.position.set(0, 1.85, 0);
-        this.vehicleGroup.add(roof);
+        // Lower body (more elongated and lower profile)
+        const lowerBodyGeometry = new THREE.BoxGeometry(4.8, 0.8, 1.95);
+        const lowerBody = new THREE.Mesh(lowerBodyGeometry, bodyMaterial);
+        lowerBody.position.y = 0.6;
+        this.vehicleGroup.add(lowerBody);
 
-        // Hood
-        const hoodGeometry = new THREE.BoxGeometry(1.5, 0.3, 2);
-        const hood = new THREE.Mesh(hoodGeometry, bodyMaterial);
-        hood.position.set(2.5, 1, 0);
-        this.vehicleGroup.add(hood);
+        // Upper body / Cabin (sleek roofline like Tesla)
+        const cabinGeometry = new THREE.BoxGeometry(3.2, 0.9, 1.85);
+        const cabin = new THREE.Mesh(cabinGeometry, bodyMaterial);
+        cabin.position.set(-0.2, 1.35, 0);
+        this.vehicleGroup.add(cabin);
 
-        // Trunk
-        const trunkGeometry = new THREE.BoxGeometry(1.2, 0.5, 2);
+        // Windshield slope (gives aerodynamic look)
+        const windshieldGeometry = new THREE.BoxGeometry(0.8, 0.7, 1.85);
+        const windshield = new THREE.Mesh(windshieldGeometry, bodyMaterial);
+        windshield.position.set(1.1, 1.5, 0);
+        windshield.rotation.z = 0.35; // Sloped windshield
+        this.vehicleGroup.add(windshield);
+
+        // Front bumper/nose (Tesla's distinctive front)
+        const frontGeometry = new THREE.BoxGeometry(0.6, 0.5, 1.9);
+        const front = new THREE.Mesh(frontGeometry, bodyMaterial);
+        front.position.set(2.5, 0.5, 0);
+        this.vehicleGroup.add(front);
+
+        // Rear trunk (sloped like Tesla)
+        const trunkGeometry = new THREE.BoxGeometry(1.0, 0.6, 1.9);
         const trunk = new THREE.Mesh(trunkGeometry, bodyMaterial);
-        trunk.position.set(-2.3, 1.1, 0);
+        trunk.position.set(-2.1, 1.2, 0);
+        trunk.rotation.z = -0.2;
         this.vehicleGroup.add(trunk);
+
+        // Side skirts (Tesla's smooth sides)
+        const skirtGeometry = new THREE.BoxGeometry(4.8, 0.3, 0.1);
+        const leftSkirt = new THREE.Mesh(skirtGeometry, bodyMaterial);
+        leftSkirt.position.set(0, 0.3, 1.0);
+        this.vehicleGroup.add(leftSkirt);
+
+        const rightSkirt = new THREE.Mesh(skirtGeometry, bodyMaterial);
+        rightSkirt.position.set(0, 0.3, -1.0);
+        this.vehicleGroup.add(rightSkirt);
 
         // Wheels
         this.createWheels();
@@ -63,28 +83,51 @@ class Vehicle {
     }
 
     /**
-     * Create wheels
+     * Create wheels - improved for better appearance
      */
     createWheels() {
-        const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
-        const wheelMaterial = new THREE.MeshStandardMaterial({
-            color: 0x111111,
-            metalness: 0.7,
-            roughness: 0.3,
+        const tireMaterial = new THREE.MeshStandardMaterial({
+            color: 0x1a1a1a,
+            metalness: 0.2,
+            roughness: 0.8,
+        });
+
+        const rimMaterial = new THREE.MeshStandardMaterial({
+            color: 0x888888,
+            metalness: 0.9,
+            roughness: 0.1,
         });
 
         const wheelPositions = [
-            { x: 1.5, z: 1.1 },   // Front left
-            { x: 1.5, z: -1.1 },  // Front right
-            { x: -1.5, z: 1.1 },  // Rear left
-            { x: -1.5, z: -1.1 }, // Rear right
+            { x: 1.7, z: 1.05 },   // Front left
+            { x: 1.7, z: -1.05 },  // Front right
+            { x: -1.7, z: 1.05 },  // Rear left
+            { x: -1.7, z: -1.05 }, // Rear right
         ];
 
         wheelPositions.forEach(pos => {
-            const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
-            wheel.rotation.z = Math.PI / 2;
-            wheel.position.set(pos.x, 0.4, pos.z);
-            this.vehicleGroup.add(wheel);
+            const wheelGroup = new THREE.Group();
+
+            // Tire (outer part)
+            const tireGeometry = new THREE.CylinderGeometry(0.45, 0.45, 0.25, 32);
+            const tire = new THREE.Mesh(tireGeometry, tireMaterial);
+            tire.rotation.z = Math.PI / 2;
+            wheelGroup.add(tire);
+
+            // Rim (inner metallic part)
+            const rimGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.27, 32);
+            const rim = new THREE.Mesh(rimGeometry, rimMaterial);
+            rim.rotation.z = Math.PI / 2;
+            wheelGroup.add(rim);
+
+            // Hub cap center
+            const hubGeometry = new THREE.CylinderGeometry(0.12, 0.12, 0.29, 16);
+            const hub = new THREE.Mesh(hubGeometry, rimMaterial);
+            hub.rotation.z = Math.PI / 2;
+            wheelGroup.add(hub);
+
+            wheelGroup.position.set(pos.x, 0.45, pos.z);
+            this.vehicleGroup.add(wheelGroup);
         });
     }
 
@@ -234,55 +277,59 @@ class Vehicle {
     }
 
     /**
-     * Create headlights and taillights
+     * Create headlights and taillights - Tesla style
      */
     createLights() {
-        // Headlights
-        const headlightGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.1, 16);
+        // Tesla-style LED headlights (more rectangular/sleek)
+        const headlightGeometry = new THREE.BoxGeometry(0.15, 0.25, 0.5);
         const headlightMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffee,
-            emissive: 0xffffee,
-            emissiveIntensity: 1,
+            color: 0xffffff,
+            emissive: 0xeeeeff,
+            emissiveIntensity: 1.5,
         });
 
         const leftHeadlight = new THREE.Mesh(headlightGeometry, headlightMaterial);
-        leftHeadlight.position.set(3, 1, 0.6);
-        leftHeadlight.rotation.z = Math.PI / 2;
+        leftHeadlight.position.set(2.75, 0.7, 0.7);
         this.vehicleGroup.add(leftHeadlight);
 
         const rightHeadlight = new THREE.Mesh(headlightGeometry, headlightMaterial);
-        rightHeadlight.position.set(3, 1, -0.6);
-        rightHeadlight.rotation.z = Math.PI / 2;
+        rightHeadlight.position.set(2.75, 0.7, -0.7);
         this.vehicleGroup.add(rightHeadlight);
 
         // Headlight beams (SpotLights)
-        const leftBeam = new THREE.SpotLight(0xffffff, 2, 100, Math.PI / 8, 0.5);
-        leftBeam.position.copy(leftHeadlight.position);
-        leftBeam.target.position.set(50, 0, 0.6);
+        const leftBeam = new THREE.SpotLight(0xffffff, 3, 100, Math.PI / 8, 0.3);
+        leftBeam.position.set(2.8, 0.7, 0.7);
+        leftBeam.target.position.set(50, 0, 0.7);
         this.vehicleGroup.add(leftBeam);
         this.vehicleGroup.add(leftBeam.target);
 
-        const rightBeam = new THREE.SpotLight(0xffffff, 2, 100, Math.PI / 8, 0.5);
-        rightBeam.position.copy(rightHeadlight.position);
-        rightBeam.target.position.set(50, 0, -0.6);
+        const rightBeam = new THREE.SpotLight(0xffffff, 3, 100, Math.PI / 8, 0.3);
+        rightBeam.position.set(2.8, 0.7, -0.7);
+        rightBeam.target.position.set(50, 0, -0.7);
         this.vehicleGroup.add(rightBeam);
         this.vehicleGroup.add(rightBeam.target);
 
-        // Taillights
+        // Tesla-style horizontal taillights (distinctive red strip)
+        const taillightGeometry = new THREE.BoxGeometry(0.1, 0.15, 1.3);
         const taillightMaterial = new THREE.MeshBasicMaterial({
             color: 0xff0000,
             emissive: 0xff0000,
-            emissiveIntensity: 0.5,
+            emissiveIntensity: 1.2,
         });
 
-        const leftTaillight = new THREE.Mesh(headlightGeometry, taillightMaterial);
-        leftTaillight.position.set(-3, 1, 0.6);
-        leftTaillight.rotation.z = Math.PI / 2;
+        const taillight = new THREE.Mesh(taillightGeometry, taillightMaterial);
+        taillight.position.set(-2.6, 1.0, 0);
+        this.vehicleGroup.add(taillight);
+
+        // Additional smaller taillights on sides
+        const sideTaillightGeometry = new THREE.BoxGeometry(0.12, 0.2, 0.3);
+
+        const leftTaillight = new THREE.Mesh(sideTaillightGeometry, taillightMaterial);
+        leftTaillight.position.set(-2.5, 0.7, 0.75);
         this.vehicleGroup.add(leftTaillight);
 
-        const rightTaillight = new THREE.Mesh(headlightGeometry, taillightMaterial);
-        rightTaillight.position.set(-3, 1, -0.6);
-        rightTaillight.rotation.z = Math.PI / 2;
+        const rightTaillight = new THREE.Mesh(sideTaillightGeometry, taillightMaterial);
+        rightTaillight.position.set(-2.5, 0.7, -0.75);
         this.vehicleGroup.add(rightTaillight);
     }
 
@@ -313,7 +360,12 @@ class Vehicle {
 
         // Update vehicle rotation to follow track
         // Calculate proper orientation using tangent
-        const angle = Math.atan2(tangent.z, tangent.x);
+        // Vehicle's front is along local +X axis
+        // When rotation.y = θ, local +X points in world direction (cos(θ), 0, -sin(θ))
+        // We want local +X to align with tangent direction (tangent.x, 0, tangent.z)
+        // Therefore: cos(θ) = tangent.x and -sin(θ) = tangent.z
+        // This gives: θ = atan2(-tangent.z, tangent.x)
+        const angle = Math.atan2(-tangent.z, tangent.x);
         this.vehicleGroup.rotation.y = angle;
 
         // Animate steering wheel based on turn angle
