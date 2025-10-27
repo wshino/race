@@ -19,34 +19,23 @@ class Track {
     }
 
     /**
-     * Create the Shuto C1 loop path using CatmullRomCurve3
-     * Simplified version of the actual C1 route
+     * Create an oval race track path
+     * Simple oval circuit for stable driving experience
      */
     createPath() {
-        // Define control points for the C1 loop (simplified)
-        // The path represents a loop around central Tokyo
-        const points = [
-            new THREE.Vector3(0, 2, 0),
-            new THREE.Vector3(50, 2, -20),
-            new THREE.Vector3(100, 3, -30),
-            new THREE.Vector3(150, 2, -25),
-            new THREE.Vector3(200, 4, -10),
-            new THREE.Vector3(250, 3, 10),
-            new THREE.Vector3(300, 2, 30),
-            new THREE.Vector3(320, 5, 60),  // Elevated section
-            new THREE.Vector3(330, 6, 90),
-            new THREE.Vector3(320, 4, 120),
-            new THREE.Vector3(290, 3, 140),
-            new THREE.Vector3(250, 2, 150),
-            new THREE.Vector3(200, 2, 155),
-            new THREE.Vector3(150, 3, 150),
-            new THREE.Vector3(100, 2, 140),
-            new THREE.Vector3(60, 4, 120),
-            new THREE.Vector3(30, 5, 90),
-            new THREE.Vector3(10, 3, 60),
-            new THREE.Vector3(-5, 2, 30),
-            new THREE.Vector3(-10, 2, 0),
-        ];
+        // Create an oval track using an ellipse
+        const points = [];
+        const numPoints = 100;
+        const radiusX = 80; // Width of oval
+        const radiusZ = 50; // Height of oval
+        const trackHeight = 0; // Ground level track
+
+        for (let i = 0; i < numPoints; i++) {
+            const angle = (i / numPoints) * Math.PI * 2;
+            const x = Math.cos(angle) * radiusX;
+            const z = Math.sin(angle) * radiusZ;
+            points.push(new THREE.Vector3(x, trackHeight, z));
+        }
 
         // Create smooth curve
         this.path = new THREE.CatmullRomCurve3(points, true); // true = closed loop
@@ -217,12 +206,12 @@ class Track {
     }
 
     /**
-     * Create Tokyo cityscape buildings
+     * Create Tokyo cityscape buildings around oval track
      */
     createBuildings() {
-        const numBuildings = 100;
-        const minDistance = 30;
-        const maxDistance = 150;
+        const numBuildings = 80;
+        const minDistance = 80;
+        const maxDistance = 200;
 
         for (let i = 0; i < numBuildings; i++) {
             const angle = (i / numBuildings) * Math.PI * 2;
@@ -287,36 +276,10 @@ class Track {
     }
 
     /**
-     * Create tunnel sections
+     * Create tunnel sections - removed for oval track
      */
     createTunnels() {
-        const tunnelPositions = [
-            { start: 0.2, length: 0.1 },
-            { start: 0.6, length: 0.15 }
-        ];
-
-        tunnelPositions.forEach(({ start, length }) => {
-            const startPoint = this.path.getPointAt(start);
-            const endPoint = this.path.getPointAt(start + length);
-
-            const tunnelLength = startPoint.distanceTo(endPoint);
-            const geometry = new THREE.BoxGeometry(20, 10, tunnelLength);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0x333333,
-                side: THREE.DoubleSide,
-            });
-
-            const tunnel = new THREE.Mesh(geometry, material);
-            tunnel.position.lerpVectors(startPoint, endPoint, 0.5);
-            tunnel.position.y += 5;
-
-            // Orient tunnel
-            const direction = new THREE.Vector3().subVectors(endPoint, startPoint);
-            tunnel.lookAt(tunnel.position.clone().add(direction));
-
-            this.tunnelMeshes.push(tunnel);
-            this.scene.add(tunnel);
-        });
+        // No tunnels on oval track for better visibility
     }
 
     /**

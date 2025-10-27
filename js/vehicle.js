@@ -312,8 +312,9 @@ class Vehicle {
         this.vehicleGroup.position.copy(position);
 
         // Update vehicle rotation to follow track
-        const lookAtPoint = position.clone().add(tangent);
-        this.vehicleGroup.lookAt(lookAtPoint);
+        // Calculate proper orientation using tangent
+        const angle = Math.atan2(tangent.z, tangent.x);
+        this.vehicleGroup.rotation.y = angle;
 
         // Animate steering wheel based on turn angle
         const nextTangent = track.getTangentAt(this.trackProgress + 0.01);
