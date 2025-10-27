@@ -45,21 +45,6 @@ class Vehicle {
         cabin.position.set(-0.2, 1.35, 0);
         this.vehicleGroup.add(cabin);
 
-        // Windshield slope (gives aerodynamic look) - using transparent material
-        const windshieldGlassMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x88ccff,
-            transparent: true,
-            opacity: 0.15,
-            metalness: 0.1,
-            roughness: 0.05,
-            transmission: 0.95,
-        });
-        const windshieldGeometry = new THREE.BoxGeometry(0.8, 0.7, 1.85);
-        const windshield = new THREE.Mesh(windshieldGeometry, windshieldGlassMaterial);
-        windshield.position.set(1.1, 1.5, 0);
-        windshield.rotation.z = 0.35; // Sloped windshield
-        this.vehicleGroup.add(windshield);
-
         // Front bumper/nose (Tesla's distinctive front)
         const frontGeometry = new THREE.BoxGeometry(0.6, 0.5, 1.9);
         const front = new THREE.Mesh(frontGeometry, bodyMaterial);
@@ -151,14 +136,6 @@ class Vehicle {
             roughness: 0.1,
             transmission: 0.9,
         });
-
-        // Windshield
-        const windshieldGeometry = new THREE.PlaneGeometry(1.8, 1);
-        const windshield = new THREE.Mesh(windshieldGeometry, windowMaterial);
-        windshield.position.set(1.2, 1.8, 0);
-        windshield.rotation.y = Math.PI / 2;
-        windshield.rotation.z = -0.2;
-        this.vehicleGroup.add(windshield);
 
         // Side windows
         const sideWindowGeometry = new THREE.PlaneGeometry(2, 0.8);
