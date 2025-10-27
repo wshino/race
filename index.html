@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokyo Tesla 3D Drive - Shuto Expressway</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="startScreen" class="screen">
+        <div class="title-container">
+            <h1 class="title">TOKYO DRIVE</h1>
+            <h2 class="subtitle">Tesla Model S - Shuto Expressway C1</h2>
+            <button id="startButton" class="start-button">START</button>
+            <p class="instructions">Press START to begin your endless drive through Tokyo</p>
+        </div>
+    </div>
+
+    <!-- Game Canvas -->
+    <div id="gameContainer" class="hidden">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- HUD Overlay -->
+        <div id="hud">
+            <div class="hud-top">
+                <div class="location">Shuto Expressway C1</div>
+                <div class="time" id="timeDisplay">Night Mode</div>
+            </div>
+            <div class="hud-bottom">
+                <div class="speedometer">
+                    <div class="speed-value" id="speedValue">0</div>
+                    <div class="speed-unit">km/h</div>
+                </div>
+                <div class="autopilot-indicator">
+                    <span class="autopilot-icon">🤖</span>
+                    <span class="autopilot-text">AUTOPILOT</span>
+                </div>
+            </div>
+            <button id="stopButton" class="stop-button">ESC to Stop</button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="screen hidden">
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading Tokyo...</p>
+        </div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="js/track.js"></script>
+    <script src="js/vehicle.js"></script>
+    <script src="js/environment.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/scene.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
