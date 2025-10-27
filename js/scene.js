@@ -134,28 +134,29 @@ class SceneManager {
         const vehicleGroup = this.vehicle.getGroup();
 
         // Driver's seat position (relative to vehicle)
-        const driverOffset = new THREE.Vector3(0.5, 1.4, -0.3);
+        const cameraDistance = 0.5;
+        const cameraHeight = 1.4;
+        const lateralOffset = -0.3;
 
-        // Transform offset to world space
-        const worldOffset = driverOffset.clone();
-        worldOffset.applyQuaternion(vehicleGroup.quaternion);
+        // Calculate camera position based on vehicle rotation
+        const angle = vehicleGroup.rotation.y;
+        const cameraX = vehicleGroup.position.x - Math.cos(angle) * cameraDistance;
+        const cameraZ = vehicleGroup.position.z - Math.sin(angle) * cameraDistance;
+        const cameraY = vehicleGroup.position.y + cameraHeight;
 
         // Position camera at driver's seat
-        this.camera.position.copy(vehicleGroup.position).add(worldOffset);
+        this.camera.position.set(cameraX, cameraY, cameraZ);
 
         // Look direction (forward from vehicle)
-        const lookAhead = new THREE.Vector3(10, 0, 0);
-        lookAhead.applyQuaternion(vehicleGroup.quaternion);
-        const lookAtPoint = vehicleGroup.position.clone().add(lookAhead);
+        const lookDistance = 20;
+        const lookX = vehicleGroup.position.x + Math.cos(angle) * lookDistance;
+        const lookZ = vehicleGroup.position.z + Math.sin(angle) * lookDistance;
+        const lookY = vehicleGroup.position.y + cameraHeight;
 
-        this.camera.lookAt(lookAtPoint);
+        this.camera.lookAt(lookX, lookY, lookZ);
 
-        // Slight tilt based on speed (for immersion)
-        const speed = this.vehicle.getSpeed();
-        if (speed > 80) {
-            const tilt = (speed - 80) / 2000;
-            this.camera.rotation.z = Math.sin(Date.now() * 0.001) * tilt;
-        }
+        // Fix camera up vector to prevent flipping
+        this.camera.up.set(0, 1, 0);
     }
 
     /**
