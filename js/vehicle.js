@@ -182,9 +182,9 @@ class Vehicle {
         dashboard.position.set(1.5, 0.9, 0);
         this.interiorGroup.add(dashboard);
 
-        // Steering wheel
+        // Steering wheel (left-hand drive, so on the left/+Z side)
         this.steeringWheel = this.createSteeringWheel();
-        this.steeringWheel.position.set(0.8, 1.1, -0.3);
+        this.steeringWheel.position.set(0.8, 1.1, 0.3);
         this.interiorGroup.add(this.steeringWheel);
 
         // Center console screen (Tesla's main display)
@@ -254,9 +254,9 @@ class Vehicle {
             roughness: 0.8,
         });
 
-        // Driver seat
+        // Driver seat (left side for left-hand drive)
         const driverSeat = new THREE.Mesh(seatGeometry, seatMaterial);
-        driverSeat.position.set(-0.3, 0.5, -0.3);
+        driverSeat.position.set(-0.3, 0.5, 0.0);
         this.interiorGroup.add(driverSeat);
 
         // Passenger seat
@@ -268,7 +268,7 @@ class Vehicle {
         const backGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.1);
 
         const driverBack = new THREE.Mesh(backGeometry, seatMaterial);
-        driverBack.position.set(-0.7, 0.9, -0.3);
+        driverBack.position.set(-0.7, 0.9, 0.0);
         this.interiorGroup.add(driverBack);
 
         const passengerBack = new THREE.Mesh(backGeometry, seatMaterial);

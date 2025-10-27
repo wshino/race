@@ -136,7 +136,7 @@ class SceneManager {
         // Driver's seat position inside the vehicle
         const cameraOffsetX = -0.5;  // Behind the steering wheel
         const cameraOffsetY = 1.4;   // Eye level
-        const cameraOffsetZ = 0.3;   // Slightly to the left (driver's side)
+        const cameraOffsetZ = 0.0;   // Centered (driver sits centered, wheel is to the left)
 
         // Get vehicle rotation and position
         const angle = vehicleGroup.rotation.y;
@@ -162,7 +162,7 @@ class SceneManager {
         // Look ahead in the direction the vehicle is facing
         const lookDistance = 30;
         const lookX = vehicleGroup.position.x + Math.cos(angle) * lookDistance;
-        const lookZ = vehicleGroup.position.z + Math.sin(angle) * lookDistance;
+        const lookZ = vehicleGroup.position.z - Math.sin(angle) * lookDistance;
         const lookY = vehicleGroup.position.y + cameraOffsetY;
 
         this.camera.lookAt(lookX, lookY, lookZ);
