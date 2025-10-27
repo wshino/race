@@ -21,6 +21,13 @@ Tesla Model Sが東京の首都高速道路C1ループを自動走行する、�
 
 ## クイックスタート
 
+### ライブデモ
+
+GitHub Pagesにデプロイされたライブデモをご覧ください:
+**[https://wshino.github.io/race/](https://wshino.github.io/race/)**
+
+> 注: このリポジトリをフォークした場合は、`wshino`をあなたのGitHubユーザー名に置き換えてください。
+
 ### ローカル実行
 
 1. このリポジトリをクローン:
@@ -215,6 +222,33 @@ http://localhost:8000
 - ブラウザコンソールを確認
 - JavaScriptが有効か確認
 - ハードリフレッシュを試す（Ctrl+F5）
+
+## デプロイ
+
+### GitHub Pages
+
+このプロジェクトは、`main`ブランチに変更がプッシュされると自動的にGitHub Pagesにデプロイされます。
+
+#### GitHub Pagesのセットアップ
+
+1. GitHubのリポジトリ設定に移動
+2. **Settings** > **Pages**に移動
+3. **Source**で**GitHub Actions**を選択
+4. `main`へのプッシュごとに自動的にサイトがデプロイされます
+
+ワークフローファイルは`.github/workflows/deploy.yml`にあります。
+
+デプロイ後、サイトは以下のURLで利用可能になります:
+```
+https://<your-username>.github.io/race/
+```
+
+#### 手動デプロイ
+
+手動でデプロイをトリガーすることもできます:
+1. GitHubリポジトリの**Actions**タブに移動
+2. **Deploy to GitHub Pages**ワークフローを選択
+3. **Run workflow**をクリック
 
 ## ライセンス
 

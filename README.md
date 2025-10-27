@@ -21,6 +21,13 @@ An immersive browser-based 3D driving simulation featuring a Tesla Model S auton
 
 ## Quick Start
 
+### Live Demo
+
+Visit the live demo deployed on GitHub Pages:
+**[https://wshino.github.io/race/](https://wshino.github.io/race/)**
+
+> Note: Replace `wshino` with your GitHub username if you forked this repository.
+
 ### Running Locally
 
 1. Clone this repository:
@@ -141,6 +148,33 @@ Built with modern web technologies and best practices:
 - Memory-conscious resource handling
 - Responsive design patterns
 - Performance optimization techniques
+
+## Deployment
+
+### GitHub Pages
+
+This project automatically deploys to GitHub Pages when changes are pushed to the `main` branch.
+
+#### Setup GitHub Pages
+
+1. Go to your repository settings on GitHub
+2. Navigate to **Settings** > **Pages**
+3. Under **Source**, select **GitHub Actions**
+4. The site will be automatically deployed on every push to `main`
+
+The workflow file is located at `.github/workflows/deploy.yml`.
+
+Once deployed, your site will be available at:
+```
+https://<your-username>.github.io/race/
+```
+
+#### Manual Deployment
+
+You can also trigger a manual deployment:
+1. Go to the **Actions** tab in your GitHub repository
+2. Select the **Deploy to GitHub Pages** workflow
+3. Click **Run workflow**
 
 ## License
 
