@@ -313,7 +313,8 @@ class Vehicle {
 
         // Update vehicle rotation to follow track
         // Calculate proper orientation using tangent
-        const angle = Math.atan2(tangent.z, tangent.x);
+        // Add PI to flip the vehicle 180 degrees if it's backwards
+        const angle = Math.atan2(tangent.z, tangent.x) + Math.PI;
         this.vehicleGroup.rotation.y = angle;
 
         // Animate steering wheel based on turn angle

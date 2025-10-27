@@ -133,30 +133,39 @@ class SceneManager {
 
         const vehicleGroup = this.vehicle.getGroup();
 
-        // Driver's seat position (relative to vehicle)
-        const cameraDistance = 0.5;
-        const cameraHeight = 1.4;
-        const lateralOffset = -0.3;
+        // Driver's seat position inside the vehicle
+        const cameraOffsetX = -0.5;  // Behind the steering wheel
+        const cameraOffsetY = 1.4;   // Eye level
+        const cameraOffsetZ = 0.3;   // Slightly to the left (driver's side)
 
-        // Calculate camera position based on vehicle rotation
+        // Get vehicle rotation and position
         const angle = vehicleGroup.rotation.y;
-        const cameraX = vehicleGroup.position.x - Math.cos(angle) * cameraDistance;
-        const cameraZ = vehicleGroup.position.z - Math.sin(angle) * cameraDistance;
-        const cameraY = vehicleGroup.position.y + cameraHeight;
 
-        // Position camera at driver's seat
-        this.camera.position.set(cameraX, cameraY, cameraZ);
+        // Calculate camera position relative to vehicle orientation
+        const cosAngle = Math.cos(angle);
+        const sinAngle = Math.sin(angle);
 
-        // Look direction (forward from vehicle)
-        const lookDistance = 20;
+        // Rotate the offset by vehicle angle
+        const rotatedX = cameraOffsetX * cosAngle - cameraOffsetZ * sinAngle;
+        const rotatedZ = cameraOffsetX * sinAngle + cameraOffsetZ * cosAngle;
+
+        // Set camera position
+        this.camera.position.set(
+            vehicleGroup.position.x + rotatedX,
+            vehicleGroup.position.y + cameraOffsetY,
+            vehicleGroup.position.z + rotatedZ
+        );
+
+        // Force camera up vector to prevent flipping (MUST be before lookAt)
+        this.camera.up.set(0, 1, 0);
+
+        // Look ahead in the direction the vehicle is facing
+        const lookDistance = 30;
         const lookX = vehicleGroup.position.x + Math.cos(angle) * lookDistance;
         const lookZ = vehicleGroup.position.z + Math.sin(angle) * lookDistance;
-        const lookY = vehicleGroup.position.y + cameraHeight;
+        const lookY = vehicleGroup.position.y + cameraOffsetY;
 
         this.camera.lookAt(lookX, lookY, lookZ);
-
-        // Fix camera up vector to prevent flipping
-        this.camera.up.set(0, 1, 0);
     }
 
     /**
