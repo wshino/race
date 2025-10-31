@@ -1,4 +1,4 @@
-# Tokyo Tesla 3D Drive
+# Tokyo 3D Drive
 
 An immersive browser-based 3D driving simulation featuring a Tesla Model S autonomously driving through Tokyo's Shuto Expressway C1 loop. Experience the thrill of high-speed driving through a neon-lit Tokyo night with Gran Turismo-style driver's view perspective.
 
