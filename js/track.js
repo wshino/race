@@ -13,6 +13,10 @@ class Track {
         this.streetLights = [];
         this.guardrails = [];
 
+        // Initialize texture generator
+        this.textureGenerator = new BuildingTextureGenerator();
+        this.buildingTextures = this.textureGenerator.generateAll();
+
         this.createPath();
         this.createRoad();
         this.createEnvironment();
@@ -212,6 +216,7 @@ class Track {
         const numBuildings = 80;
         const minDistance = 80;
         const maxDistance = 200;
+        const textureTypes = ['glass', 'concrete', 'brick', 'apartment'];
 
         for (let i = 0; i < numBuildings; i++) {
             const angle = (i / numBuildings) * Math.PI * 2;
@@ -225,10 +230,24 @@ class Track {
             const depth = 10 + Math.random() * 20;
 
             const geometry = new THREE.BoxGeometry(width, height, depth);
+
+            // Choose a random texture type for variety
+            const textureType = textureTypes[Math.floor(Math.random() * textureTypes.length)];
+            const texture = this.buildingTextures[textureType];
+
+            // Set texture repeat based on building size
+            const textureClone = texture.clone();
+            textureClone.needsUpdate = true;
+            textureClone.wrapS = THREE.RepeatWrapping;
+            textureClone.wrapT = THREE.RepeatWrapping;
+            textureClone.repeat.set(Math.max(1, width / 20), Math.max(1, height / 30));
+
             const material = new THREE.MeshStandardMaterial({
-                color: new THREE.Color().setHSL(0.6, 0.1, 0.1 + Math.random() * 0.2),
+                map: textureClone,
+                roughness: 0.7,
+                metalness: 0.3,
                 emissive: new THREE.Color().setHSL(0.1, 0.5, 0.05),
-                emissiveIntensity: 0.3,
+                emissiveIntensity: 0.2,
             });
 
             const building = new THREE.Mesh(geometry, material);
@@ -239,38 +258,29 @@ class Track {
             this.buildingMeshes.push(building);
             this.scene.add(building);
 
-            // Add windows
-            this.addWindows(building, width, height, depth);
+            // Textures already include windows, but add some extra glow for lit windows
+            this.addWindowGlow(building, width, height, depth);
         }
     }
 
     /**
-     * Add lit windows to buildings
+     * Add subtle point lights to enhance lit windows on textured buildings
      */
-    addWindows(building, width, height, depth) {
-        const windowRows = Math.floor(height / 3);
-        const windowCols = Math.floor(Math.max(width, depth) / 3);
+    addWindowGlow(building, width, height, depth) {
+        // Add a few strategic point lights to make lit windows glow more
+        const numLights = Math.floor(height / 20); // One light per few floors
 
-        for (let row = 0; row < windowRows; row++) {
-            for (let col = 0; col < windowCols; col++) {
-                if (Math.random() > 0.3) { // 70% chance of lit window
-                    const windowGeometry = new THREE.PlaneGeometry(1, 1.5);
-                    const windowMaterial = new THREE.MeshBasicMaterial({
-                        color: 0xffffaa,
-                        transparent: true,
-                        opacity: 0.8,
-                    });
-                    const window = new THREE.Mesh(windowGeometry, windowMaterial);
+        for (let i = 0; i < numLights; i++) {
+            if (Math.random() > 0.4) { // 60% chance of light
+                const light = new THREE.PointLight(0xffdd88, 0.3, 15);
 
-                    // Position on building face
-                    window.position.set(
-                        (col - windowCols / 2) * 2.5,
-                        (row - windowRows / 2) * 3 + height / 2,
-                        width / 2 + 0.1
-                    );
+                // Random position on building face
+                const xOffset = (Math.random() - 0.5) * width * 0.6;
+                const yOffset = ((i / numLights) - 0.5) * height;
+                const zOffset = width / 2 + 1;
 
-                    building.add(window);
-                }
+                light.position.set(xOffset, yOffset, zOffset);
+                building.add(light);
             }
         }
     }
