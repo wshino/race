@@ -133,32 +133,47 @@ class Track {
     }
 
     /**
-     * Create lane markings on the road
+     * Create lane markings on the road (optimized - merged geometry)
      */
     createLaneMarkings(points) {
         const dashLength = 6;
         const gapLength = 4;
         const totalLength = dashLength + gapLength;
 
+        // Collect all geometries to merge
+        const geometries = [];
+
         for (let i = 0; i < points.length; i += 2) {
             if ((i % Math.floor(totalLength)) < dashLength) {
                 const point = points[i];
                 const geometry = new THREE.BoxGeometry(0.3, 0.05, 2);
-                const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-                const marking = new THREE.Mesh(geometry, material);
 
-                marking.position.copy(point);
-                marking.position.y += 0.05;
+                // Create a temporary mesh to apply transformations
+                const tempMesh = new THREE.Mesh(geometry);
+                tempMesh.position.copy(point);
+                tempMesh.position.y += 0.05;
 
                 // Rotation to align with road
                 if (i < points.length - 1) {
                     const nextPoint = points[i + 1];
                     const direction = new THREE.Vector3().subVectors(nextPoint, point);
-                    marking.lookAt(marking.position.clone().add(direction));
+                    tempMesh.lookAt(tempMesh.position.clone().add(direction));
                 }
 
-                this.scene.add(marking);
+                // Apply transformations to geometry
+                tempMesh.updateMatrix();
+                geometry.applyMatrix4(tempMesh.matrix);
+
+                geometries.push(geometry);
             }
+        }
+
+        // Merge all geometries into one
+        if (geometries.length > 0) {
+            const mergedGeometry = THREE.BufferGeometryUtils.mergeGeometries(geometries);
+            const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const laneMarkings = new THREE.Mesh(mergedGeometry, material);
+            this.scene.add(laneMarkings);
         }
     }
 
@@ -252,38 +267,21 @@ class Track {
 
             const building = new THREE.Mesh(geometry, material);
             building.position.set(x, height / 2, z);
-            building.castShadow = true;
-            building.receiveShadow = true;
+            // Shadows disabled for performance optimization
+            building.castShadow = false;
+            building.receiveShadow = false;
 
             this.buildingMeshes.push(building);
             this.scene.add(building);
 
-            // Textures already include windows, but add some extra glow for lit windows
-            this.addWindowGlow(building, width, height, depth);
+            // Window glow removed for performance - using emissive maps only
         }
     }
 
     /**
-     * Add subtle point lights to enhance lit windows on textured buildings
+     * Window glow function removed for performance optimization
+     * Buildings now use only emissive materials for lit windows
      */
-    addWindowGlow(building, width, height, depth) {
-        // Add a few strategic point lights to make lit windows glow more
-        const numLights = Math.floor(height / 20); // One light per few floors
-
-        for (let i = 0; i < numLights; i++) {
-            if (Math.random() > 0.4) { // 60% chance of light
-                const light = new THREE.PointLight(0xffdd88, 0.3, 15);
-
-                // Random position on building face
-                const xOffset = (Math.random() - 0.5) * width * 0.6;
-                const yOffset = ((i / numLights) - 0.5) * height;
-                const zOffset = width / 2 + 1;
-
-                light.position.set(xOffset, yOffset, zOffset);
-                building.add(light);
-            }
-        }
-    }
 
     /**
      * Create tunnel sections - removed for oval track
@@ -293,13 +291,14 @@ class Track {
     }
 
     /**
-     * Create street lights along the highway
+     * Create street lights along the highway (optimized)
      */
     createStreetLights() {
         const points = this.path.getPoints(100);
 
         points.forEach((point, index) => {
-            if (index % 5 === 0) {
+            // Reduced from every 5th to every 10th for better performance
+            if (index % 10 === 0) {
                 // Light pole
                 const poleGeometry = new THREE.CylinderGeometry(0.2, 0.2, 8);
                 const poleMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
@@ -311,8 +310,8 @@ class Track {
 
                 this.scene.add(pole);
 
-                // Light source
-                const light = new THREE.PointLight(0xffaa00, 1, 50);
+                // Light source - reduced intensity and range for performance
+                const light = new THREE.PointLight(0xffaa00, 0.8, 30);
                 light.position.copy(pole.position);
                 light.position.y += 4;
                 this.streetLights.push(light);

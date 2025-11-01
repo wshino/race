@@ -15,9 +15,10 @@ class Effects {
 
     /**
      * Create particle system for speed effects (wind, dust, rain)
+     * Optimized particle count for better performance
      */
     createParticleSystem() {
-        const particleCount = 2000;
+        const particleCount = 1000;
         const particles = new THREE.BufferGeometry();
         const positions = [];
         const velocities = [];
