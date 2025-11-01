@@ -89,22 +89,28 @@ class SceneManager {
      */
     async load() {
         try {
+            console.log('Loading environment...');
             // Create environment
             this.environment = new Environment(this.scene);
             this.environment.createGround();
 
+            console.log('Loading track...');
             // Create track
             this.track = new Track(this.scene);
 
+            console.log('Loading vehicle...');
             // Create vehicle
             this.vehicle = new Vehicle(this.scene);
 
+            console.log('Loading effects...');
             // Create effects
             this.effects = new Effects(this.scene, this.camera);
 
+            console.log('Setting up post-processing...');
             // Setup post-processing
             this.setupPostProcessing();
 
+            console.log('Setting up camera...');
             // Position camera in driver's seat
             this.setupDriverCamera();
 
@@ -112,6 +118,7 @@ class SceneManager {
             return true;
         } catch (error) {
             console.error('Error loading scene:', error);
+            console.error('Error stack:', error.stack);
             return false;
         }
     }

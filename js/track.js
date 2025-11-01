@@ -140,40 +140,87 @@ class Track {
         const gapLength = 4;
         const totalLength = dashLength + gapLength;
 
-        // Collect all geometries to merge
-        const geometries = [];
+        // Check if BufferGeometryUtils is available
+        const canMerge = typeof THREE !== 'undefined' &&
+                         THREE.BufferGeometryUtils &&
+                         typeof THREE.BufferGeometryUtils.mergeGeometries === 'function';
+
+        if (canMerge) {
+            // Optimized path: Collect all geometries to merge
+            const geometries = [];
+
+            for (let i = 0; i < points.length; i += 2) {
+                if ((i % Math.floor(totalLength)) < dashLength) {
+                    const point = points[i];
+                    const geometry = new THREE.BoxGeometry(0.3, 0.05, 2);
+
+                    // Create a temporary mesh to apply transformations
+                    const tempMesh = new THREE.Mesh(geometry);
+                    tempMesh.position.copy(point);
+                    tempMesh.position.y += 0.05;
+
+                    // Rotation to align with road
+                    if (i < points.length - 1) {
+                        const nextPoint = points[i + 1];
+                        const direction = new THREE.Vector3().subVectors(nextPoint, point);
+                        tempMesh.lookAt(tempMesh.position.clone().add(direction));
+                    }
+
+                    // Apply transformations to geometry
+                    tempMesh.updateMatrix();
+                    geometry.applyMatrix4(tempMesh.matrix);
+
+                    geometries.push(geometry);
+                }
+            }
+
+            // Merge all geometries into one
+            if (geometries.length > 0) {
+                try {
+                    const mergedGeometry = THREE.BufferGeometryUtils.mergeGeometries(geometries);
+                    const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                    const laneMarkings = new THREE.Mesh(mergedGeometry, material);
+                    this.scene.add(laneMarkings);
+                } catch (error) {
+                    console.warn('Failed to merge lane marking geometries:', error);
+                    // Fall back to individual meshes
+                    this.createLaneMarkingsIndividual(points);
+                }
+            }
+        } else {
+            // Fallback: Create individual lane marking meshes
+            console.warn('BufferGeometryUtils not available, using individual meshes for lane markings');
+            this.createLaneMarkingsIndividual(points);
+        }
+    }
+
+    /**
+     * Create lane markings as individual meshes (fallback method)
+     */
+    createLaneMarkingsIndividual(points) {
+        const dashLength = 6;
+        const gapLength = 4;
+        const totalLength = dashLength + gapLength;
+        const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
         for (let i = 0; i < points.length; i += 2) {
             if ((i % Math.floor(totalLength)) < dashLength) {
                 const point = points[i];
                 const geometry = new THREE.BoxGeometry(0.3, 0.05, 2);
+                const marking = new THREE.Mesh(geometry, material);
 
-                // Create a temporary mesh to apply transformations
-                const tempMesh = new THREE.Mesh(geometry);
-                tempMesh.position.copy(point);
-                tempMesh.position.y += 0.05;
+                marking.position.copy(point);
+                marking.position.y += 0.05;
 
                 // Rotation to align with road
                 if (i < points.length - 1) {
                     const nextPoint = points[i + 1];
                     const direction = new THREE.Vector3().subVectors(nextPoint, point);
-                    tempMesh.lookAt(tempMesh.position.clone().add(direction));
+                    marking.lookAt(marking.position.clone().add(direction));
                 }
 
-                // Apply transformations to geometry
-                tempMesh.updateMatrix();
-                geometry.applyMatrix4(tempMesh.matrix);
-
-                geometries.push(geometry);
+                this.scene.add(marking);
             }
-        }
-
-        // Merge all geometries into one
-        if (geometries.length > 0) {
-            const mergedGeometry = THREE.BufferGeometryUtils.mergeGeometries(geometries);
-            const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            const laneMarkings = new THREE.Mesh(mergedGeometry, material);
-            this.scene.add(laneMarkings);
         }
     }
 
